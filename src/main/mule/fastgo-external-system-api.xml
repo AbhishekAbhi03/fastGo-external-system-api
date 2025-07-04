@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="fastGo-external-system-apiFlow" doc:id="cff4e34d-3f36-4711-81d2-0181fd6b0995" >
+		<http:listener doc:name="Listener" doc:id="1d5cf253-b03d-41af-8137-411f7bac71d0" config-ref="HTTP_Listener_configs" path="${http.basePath}" />
+		<logger level="INFO" doc:name="Logger" doc:id="24a2ce65-c6f8-4049-8466-be752064f7b9" message="request received from the fastGo system api" />
+		<ee:transform doc:name="Transform Message" doc:id="49bc626f-da0a-42e1-9b50-06add0d516ae" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="serviceType" ><![CDATA[attributes.queryParams.serviceType]]></ee:set-variable>
+				<ee:set-variable variableName="transactionId" ><![CDATA[attributes.headers.transactionId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="eb7694c3-f107-4129-9490-dcf8752ce431" >
+			<when expression='#[vars.serviceType == "routes"]' >
+				<logger level="INFO" doc:name="Logger" doc:id="5105e82d-a4a0-485e-8243-abcc44ff67ad" />
+				<flow-ref doc:name="fastGo-routes-implSub_Flow" doc:id="bcbbe155-fa8c-4129-aba0-a5377538150f" name="fastGo-routes-implSub_Flow" />
+			</when>
+			<when expression='#[vars.serviceType == "schedules"]' >
+				<logger level="INFO" doc:name="Logger" doc:id="96c6e741-2621-46bc-8814-131af0fb1a6a" message='#[vars.serviceType == "schedules"]' />
+				<flow-ref doc:name="fastGo-schedules-implSub_Flow" doc:id="e761a849-70d9-48f2-820b-708212740c9f" name="fastGo-schedules-implSub_FlowSub_Flow" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="3e39f7e5-218e-4527-950c-f2d62339e9ec" message="invalid serviceType" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger1" doc:id="7c66420f-e219-4fae-875e-21894a41bedd" message="response sent back to the travelontip system api" />
+	</flow>
+</mule>
