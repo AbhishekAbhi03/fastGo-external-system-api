@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="fastGo-schedules-implSub_FlowSub_Flow" doc:id="f86b803b-b387-421a-b33b-fa6a8d9fc0a6" >
+		<logger level="INFO" doc:name="start logger" doc:id="66d079bc-8620-48e8-845a-b08b2a35efba" message="calling database for fastGo schedules info started"/>
+		<db:select doc:name="Select" doc:id="3045d1ea-77c2-4c84-b47d-66c8659d8df3" config-ref="Database_Configs">
+			<db:sql ><![CDATA[select * from schedules where companyname = 'fastGo';]]></db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="end logger" doc:id="3815c4d6-7bc6-49fd-b1ac-e76c220453d7" message="response received from db for fastGo schedules "/>
+		<ee:transform doc:name="Transform Message" doc:id="9810c871-d37b-4777-aa38-a256002493ad" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>
